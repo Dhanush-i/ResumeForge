@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { DEFAULT_RESUME, generateId } from '../constants';
 import ResumePreview from './ResumePreview';
+import ResumeEditDrawer from './ResumeEditDrawer';
 import SuggestInput from './SuggestInput';
 import MonthYearInput from './MonthYearInput';
 import {
@@ -9,7 +10,7 @@ import {
 } from '../data/suggestions';
 import {
   User, GraduationCap, FolderGit2, Wrench, Trophy, BadgeCheck,
-  FileText, Plus, Trash2, Download, AlertCircle, RotateCcw
+  FileText, Plus, Trash2, Download, AlertCircle, RotateCcw, Edit3
 } from 'lucide-react';
 
 // ─── Action verbs for bullet quality check ────────────────────────────────────
@@ -108,6 +109,7 @@ export default function BuilderTab() {
   const [wasRestored] = useState(() => !!loadDraft());
   const [exporting, setExporting] = useState(false);
   const [showConfirmReset, setShowConfirmReset] = useState(false);
+  const [showEditDrawer, setShowEditDrawer] = useState(false);
   const saveTimerRef = useRef(null);
   const previewScale = 0.70;
 
@@ -126,6 +128,18 @@ export default function BuilderTab() {
       saveDraft(resume);
     }, 1500);
     return () => clearTimeout(saveTimerRef.current);
+  }, [resume]);
+
+  // Ctrl+P → Export PDF
+  useEffect(() => {
+    const handler = e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        exportPDF();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [resume]);
 
   // ── Helpers ──
@@ -248,6 +262,7 @@ export default function BuilderTab() {
               onChange={e => setResume(p => ({ ...p, summary: e.target.value }))}
               placeholder="Passionate CS student with experience in full-stack development, ML, and competitive programming..."
               rows={4}
+              spellCheck
             />
             <span className={`char-count ${summary.length > 500 ? 'over' : summary.length > 380 ? 'warn' : ''}`}>
               {summary.length} / 450 chars recommended
@@ -411,9 +426,20 @@ export default function BuilderTab() {
 
       {/* ─ Preview ─ */}
       <div className="preview-panel">
-        <div className="preview-label">
-          <FileText size={13} />
-          Live Preview
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: 794 }}>
+          <div className="preview-label">
+            <FileText size={13} />
+            Live Preview
+          </div>
+          <button
+            className="btn-secondary"
+            onClick={() => setShowEditDrawer(true)}
+            style={{ padding: '6px 14px', fontSize: 12, gap: 6 }}
+            title="Open full edit drawer"
+          >
+            <Edit3 size={13} />
+            Edit
+          </button>
         </div>
         <div style={{
           transform: `scale(${previewScale})`,
@@ -426,6 +452,15 @@ export default function BuilderTab() {
 
       {/* Toast */}
       {toast && <Toast message={toast.message} icon={toast.icon} />}
+
+      {/* Edit Drawer */}
+      {showEditDrawer && (
+        <ResumeEditDrawer
+          resume={resume}
+          onSave={updated => setResume(updated)}
+          onClose={() => setShowEditDrawer(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import ResumePreview from './ResumePreview';
+import ResumeEditDrawer from './ResumeEditDrawer';
 import { DEFAULT_RESUME, generateId } from '../constants';
-import { Sparkles, Download, Lightbulb, AlertCircle, FileText, RefreshCw } from 'lucide-react';
+import { Sparkles, Download, Lightbulb, AlertCircle, FileText, Edit3 } from 'lucide-react';
 import { callGemini, parseGeminiJSON } from '../utils/gemini';
 
 const GEMINI_PROMPT = (userText) => `You are a professional resume writer specializing in engineering students. 
@@ -67,6 +68,7 @@ export default function AIBuilderTab() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [showEditDrawer, setShowEditDrawer] = useState(false);
 
   const handleGenerate = async () => {
     if (!userText.trim()) {
@@ -187,15 +189,25 @@ export default function AIBuilderTab() {
         </button>
 
         {resume && (
-          <button
-            className="btn-secondary"
-            onClick={exportPDF}
-            disabled={exporting}
-            style={{ width: '100%', justifyContent: 'center' }}
-          >
-            <Download size={14} />
-            {exporting ? 'Exporting...' : 'Export PDF'}
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              className="btn-secondary"
+              onClick={exportPDF}
+              disabled={exporting}
+              style={{ flex: 1, justifyContent: 'center' }}
+            >
+              <Download size={14} />
+              {exporting ? 'Exporting...' : 'Export PDF'}
+            </button>
+            <button
+              className="btn-secondary"
+              onClick={() => setShowEditDrawer(true)}
+              style={{ flex: 1, justifyContent: 'center' }}
+            >
+              <Edit3 size={14} />
+              Edit Resume
+            </button>
+          </div>
         )}
       </div>
 
@@ -204,7 +216,7 @@ export default function AIBuilderTab() {
         {loading ? (
           <div className="ai-loading">
             <div className="spinner" />
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#818cf8' }}>AI is crafting your resume...</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)' }}>AI is crafting your resume...</div>
             <div style={{ fontSize: 12, color: '#6b7280', maxWidth: 260, textAlign: 'center', lineHeight: 1.6 }}>
               If the model is busy, it will automatically retry — this may take up to 30 seconds.
             </div>
@@ -234,6 +246,15 @@ export default function AIBuilderTab() {
           </div>
         )}
       </div>
+
+      {/* Edit Drawer */}
+      {showEditDrawer && resume && (
+        <ResumeEditDrawer
+          resume={resume}
+          onSave={updated => setResume(updated)}
+          onClose={() => setShowEditDrawer(false)}
+        />
+      )}
     </div>
   );
 }

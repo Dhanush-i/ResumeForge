@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import BuilderTab from './components/BuilderTab';
 import AIBuilderTab from './components/AIBuilderTab';
 import AnalyzerTab from './components/AnalyzerTab';
+import TailorTab from './components/TailorTab';
 import { ResumeStyleProvider, useResumeStyle, RESUME_FONTS, RESUME_SIZES } from './context/ResumeStyleContext';
-import { FileEdit, Sparkles, BarChart3, ChevronDown, ChevronUp, Type } from 'lucide-react';
+import { FileEdit, Sparkles, BarChart3, Wand2, ChevronDown, ChevronUp, Type } from 'lucide-react';
 
 // ─── Font / Size Picker Panel ─────────────────────────────────────────────────
 function StylePanel() {
@@ -69,13 +70,15 @@ function StylePanel() {
 // ─── Tabs config ──────────────────────────────────────────────────────────────
 const TABS = [
   { id: 'builder', label: 'Build It Myself', icon: FileEdit, badge: null },
-  { id: 'ai', label: 'Build For Me', icon: Sparkles, badge: 'AI' },
+  { id: 'ai', label: 'AI Build For Me', icon: Sparkles, badge: 'AI' },
+  { id: 'tailor', label: 'Tailor with AI', icon: Wand2, badge: 'AI' },
   { id: 'analyzer', label: 'Analyzer', icon: BarChart3, badge: null },
 ];
 
 const TAB_META = {
   builder: { title: 'Resume Builder', sub: 'Form-based builder with live preview' },
   ai: { title: 'AI Resume Builder', sub: 'Paste anything — Gemini crafts your resume' },
+  tailor: { title: 'Tailor with AI', sub: 'Rewrite your resume to match any job description' },
   analyzer: { title: 'Resume Analyzer', sub: 'ATS score, keywords & feedback vs. a job description' },
 };
 
@@ -112,7 +115,7 @@ function InnerApp() {
                 onClick={() => setActiveTab(tab.id)}
                 id={`tab-${tab.id}`}
               >
-                <Icon size={22} className="nav-icon" />
+                <Icon size={24} className="nav-icon" />
                 <span style={{ flex: 1 }}>{tab.label}</span>
                 {tab.badge && <span className="nav-badge">{tab.badge}</span>}
               </button>
@@ -151,6 +154,7 @@ function InnerApp() {
         <div className="content-body">
           {activeTab === 'builder' && <BuilderTab />}
           {activeTab === 'ai' && <AIBuilderTab />}
+          {activeTab === 'tailor' && <TailorTab />}
           {activeTab === 'analyzer' && <AnalyzerTab />}
         </div>
       </main>
