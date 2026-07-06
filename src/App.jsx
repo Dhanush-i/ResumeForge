@@ -90,6 +90,10 @@ function InnerApp() {
 
   return (
     <div className="app-shell">
+      {/* Animated Background Orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+
       {/* ─── Sidebar ─── */}
       <aside className="sidebar">
         {/* Logo */}
@@ -98,7 +102,7 @@ function InnerApp() {
             <div className="logo-icon-wrap">⚡</div>
             <div className="logo-text-wrap">
               <span className="logo-name">ResumeForge</span>
-              <span className="logo-tagline">For Engineers</span>
+              <span className="logo-tagline">AI-Powered · For Engineers</span>
             </div>
           </div>
         </div>
